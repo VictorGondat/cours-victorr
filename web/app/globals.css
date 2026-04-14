@@ -1,0 +1,322 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #F97316;
+  --color-bg-outer: #EAE5DC;
+  --color-bg-inner: #FFFFFF;
+  --color-text-primary: #1A1714;
+  --color-text-muted: #8C8680;
+  --color-border: rgba(0, 0, 0, 0.08);
+
+  --radius: 0.25rem;
+
+  --font-display: "Bebas Neue", sans-serif;
+  --font-body: "Crimson Pro", serif;
+  --font-mono: "DM Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #EAE5DC;
+  color: #1A1714;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Lien retour ── */
+.retour-link {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #8C8680;
+  transition: color 0.2s;
+  text-transform: uppercase;
+}
+.retour-link:hover {
+  color: #1A1714;
+}
+
+/* ── Chapeau de section (DM Mono uppercase) ── */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8C8680;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.eyebrow::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.eyebrow.no-line::after {
+  display: none;
+}
+
+/* ── Prose pédagogique (cours / brief) ── */
+.cours-prose {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.85;
+  color: #1A1714;
+}
+
+.cours-prose h2 {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8C8680;
+  margin-top: 4rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.cours-prose h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.cours-prose h3 {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: #1A1714;
+  margin-top: 2.5rem;
+  margin-bottom: 0.875rem;
+  line-height: 1.15;
+}
+
+.cours-prose h4 {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  font-style: italic;
+  font-weight: 600;
+  color: #2D2926;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.cours-prose p {
+  margin-bottom: 1.25rem;
+  color: #2D2926;
+}
+
+.cours-prose strong {
+  font-weight: 600;
+  color: #1A1714;
+}
+
+.cours-prose em {
+  font-style: italic;
+  color: #4B4540;
+}
+
+.cours-prose ul,
+.cours-prose ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.cours-prose ul li,
+.cours-prose ol li {
+  margin-bottom: 0.4rem;
+  color: #2D2926;
+}
+
+.cours-prose ul li::marker {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.cours-prose a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(249, 115, 22, 0.55);
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 0.2s;
+}
+
+.cours-prose a:hover {
+  text-decoration-color: #F97316;
+}
+
+.cours-prose blockquote {
+  border-left: 2px solid #F97316;
+  padding-left: 1.25rem;
+  margin: 1.75rem 0;
+  font-style: italic;
+  color: #4B4540;
+}
+
+.cours-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: #F5F1E8;
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  color: #1A1714;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cours-prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  background: #1A1714;
+  color: #EAE5DC;
+  padding: 1.25rem 1.5rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 1.75rem 0;
+}
+
+.cours-prose pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* ── Callouts / encarts ── */
+.callout {
+  background: #F5F1E8;
+  border-left: 2px solid #F97316;
+  padding: 1.25rem 1.5rem;
+  margin: 1.75rem 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #2D2926;
+}
+
+.callout .callout-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #F97316;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Figures pédagogiques ── */
+.figure {
+  margin: 2.5rem 0;
+  padding: 2rem 1.5rem;
+  background: #FAF7F1;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.figure-caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8C8680;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.figure svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Badge / pill ── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8C8680;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+}
+
+.pill.accent {
+  color: #F97316;
+  border-color: rgba(249, 115, 22, 0.35);
+  background: rgba(249, 115, 22, 0.06);
+}
+
+/* ── Grille de cartes jour ── */
+.jour-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.jour-card:hover {
+  border-color: #F97316;
+  transform: translateY(-2px);
+}
+
+/* ── Tableau du barème ── */
+.bareme-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  margin: 1.5rem 0;
+}
+
+.bareme-table th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8C8680;
+  text-align: left;
+  font-weight: 400;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.bareme-table td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  color: #2D2926;
+  vertical-align: top;
+}
+
+.bareme-table td.points {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: #F97316;
+  white-space: nowrap;
+}

@@ -1,0 +1,33 @@
+services:
+  cours-victorr:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: cours-victorr
+    restart: unless-stopped
+    networks:
+      - vps-infra
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=vps-infra"
+      - "traefik.http.routers.cours-victorr.rule=Host(`cours.victorr.fr`)"
+      - "traefik.http.routers.cours-victorr.entrypoints=websecure"
+      - "traefik.http.routers.cours-victorr.tls=true"
+      - "traefik.http.routers.cours-victorr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.cours-victorr.middlewares=cours-sec-headers@docker"
+      - "traefik.http.services.cours-victorr.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.cours-sec-headers.headers.stsSeconds=86400"
+      - "traefik.http.middlewares.cours-sec-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.cours-sec-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.cours-sec-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.cours-sec-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
+
+networks:
+  vps-infra:
+    external: true
