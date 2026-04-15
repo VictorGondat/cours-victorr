@@ -41,6 +41,23 @@ export function getDb(): Database.Database {
     CREATE INDEX IF NOT EXISTS idx_members_group ON members(group_id);
   `);
 
+  const existingCols = db
+    .prepare("PRAGMA table_info(groups)")
+    .all() as { name: string }[];
+  const colNames = new Set(existingCols.map((c) => c.name));
+  const additions: Array<[string, string]> = [
+    ["vercel_ready", "INTEGER NOT NULL DEFAULT 0"],
+    ["github_ready", "INTEGER NOT NULL DEFAULT 0"],
+    ["llm_used", "TEXT NOT NULL DEFAULT ''"],
+    ["llm_other_name", "TEXT NOT NULL DEFAULT ''"],
+    ["notes", "TEXT NOT NULL DEFAULT ''"],
+  ];
+  for (const [name, def] of additions) {
+    if (!colNames.has(name)) {
+      db.exec(`ALTER TABLE groups ADD COLUMN ${name} ${def}`);
+    }
+  }
+
   const seed = db.prepare("INSERT OR IGNORE INTO groups (id) VALUES (?)");
   const seedAll = db.transaction(() => {
     for (let i = 1; i <= 8; i++) seed.run(i);
@@ -60,6 +77,11 @@ export type GroupRow = {
   repo_url: string;
   target_user: string;
   problem: string;
+  vercel_ready: number;
+  github_ready: number;
+  llm_used: string;
+  llm_other_name: string;
+  notes: string;
   updated_at: string | null;
 };
 
@@ -163,45 +185,64 @@ export function leaveGroup(normalizedKey: string): void {
   db.prepare("DELETE FROM members WHERE normalized_key = ?").run(normalizedKey);
 }
 
+export type ProjectUpdate = Partial<{
+  team_name: string;
+  project_name: string;
+  description: string;
+  app_url: string;
+  repo_url: string;
+  target_user: string;
+  problem: string;
+  vercel_ready: number;
+  github_ready: number;
+  llm_used: string;
+  llm_other_name: string;
+  notes: string;
+}>;
+
+const TEXT_FIELDS = [
+  "team_name",
+  "project_name",
+  "description",
+  "app_url",
+  "repo_url",
+  "target_user",
+  "problem",
+  "llm_used",
+  "llm_other_name",
+  "notes",
+] as const;
+
+const INT_FIELDS = ["vercel_ready", "github_ready"] as const;
+
 export function updateGroupProject(
   groupId: number,
-  fields: Partial<
-    Pick<
-      GroupRow,
-      | "team_name"
-      | "project_name"
-      | "description"
-      | "app_url"
-      | "repo_url"
-      | "target_user"
-      | "problem"
-    >
-  >,
+  fields: ProjectUpdate,
 ): void {
   const db = getDb();
-  const allowed = [
-    "team_name",
-    "project_name",
-    "description",
-    "app_url",
-    "repo_url",
-    "target_user",
-    "problem",
-  ] as const;
-
   const sets: string[] = [];
-  const values: string[] = [];
-  for (const k of allowed) {
-    if (fields[k] !== undefined) {
+  const values: (string | number)[] = [];
+
+  for (const k of TEXT_FIELDS) {
+    const v = fields[k];
+    if (v !== undefined) {
       sets.push(`${k} = ?`);
-      values.push(fields[k] ?? "");
+      values.push(v);
     }
   }
+  for (const k of INT_FIELDS) {
+    const v = fields[k];
+    if (v !== undefined) {
+      sets.push(`${k} = ?`);
+      values.push(v ? 1 : 0);
+    }
+  }
+
   if (sets.length === 0) return;
 
   sets.push("updated_at = ?");
   values.push(new Date().toISOString());
-  values.push(String(groupId));
+  values.push(groupId);
 
   db.prepare(`UPDATE groups SET ${sets.join(", ")} WHERE id = ?`).run(...values);
 }

@@ -4,15 +4,19 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { GroupWithMembers } from "@/lib/db";
 
+type TextKey =
+  | "team_name"
+  | "project_name"
+  | "description"
+  | "app_url"
+  | "repo_url"
+  | "target_user"
+  | "problem"
+  | "notes"
+  | "llm_other_name";
+
 type Field = {
-  key:
-    | "team_name"
-    | "project_name"
-    | "description"
-    | "app_url"
-    | "repo_url"
-    | "target_user"
-    | "problem";
+  key: TextKey;
   label: string;
   placeholder: string;
   multiline?: boolean;
@@ -59,6 +63,21 @@ const FIELDS: Field[] = [
   },
 ];
 
+const LLM_OPTIONS: Array<{ key: string; label: string }> = [
+  { key: "claude-code", label: "Claude Code" },
+  { key: "codex", label: "Codex (OpenAI)" },
+  { key: "other", label: "Autre" },
+];
+
+function parseLlmList(raw: string): Set<string> {
+  return new Set(
+    raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  );
+}
+
 export function ProjectEditor({ group }: { group: GroupWithMembers }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -70,13 +89,31 @@ export function ProjectEditor({ group }: { group: GroupWithMembers }) {
     problem: group.problem,
     app_url: group.app_url,
     repo_url: group.repo_url,
+    vercel_ready: Boolean(group.vercel_ready),
+    github_ready: Boolean(group.github_ready),
+    llm_used: group.llm_used,
+    llm_other_name: group.llm_other_name,
+    notes: group.notes,
   }));
   const [savedAt, setSavedAt] = useState<string | null>(group.updated_at);
   const [error, setError] = useState<string | null>(null);
   const [leaving, setLeaving] = useState(false);
 
-  function onChange(k: keyof typeof state, v: string) {
+  const llmSet = parseLlmList(state.llm_used);
+
+  function onText(k: TextKey, v: string) {
     setState((s) => ({ ...s, [k]: v }));
+  }
+
+  function onBool(k: "vercel_ready" | "github_ready", v: boolean) {
+    setState((s) => ({ ...s, [k]: v }));
+  }
+
+  function onLlmToggle(key: string) {
+    const next = new Set(llmSet);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    setState((s) => ({ ...s, llm_used: Array.from(next).join(",") }));
   }
 
   async function onSave(e: React.FormEvent) {
@@ -136,7 +173,7 @@ export function ProjectEditor({ group }: { group: GroupWithMembers }) {
             {f.multiline ? (
               <textarea
                 value={state[f.key]}
-                onChange={(e) => onChange(f.key, e.target.value)}
+                onChange={(e) => onText(f.key, e.target.value)}
                 placeholder={f.placeholder}
                 rows={3}
                 style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }}
@@ -145,13 +182,94 @@ export function ProjectEditor({ group }: { group: GroupWithMembers }) {
               <input
                 type={f.key.endsWith("_url") ? "url" : "text"}
                 value={state[f.key]}
-                onChange={(e) => onChange(f.key, e.target.value)}
+                onChange={(e) => onText(f.key, e.target.value)}
                 placeholder={f.placeholder}
                 style={inputStyle}
               />
             )}
           </div>
         ))}
+
+        <div
+          style={{
+            borderTop: "1px dashed rgba(0,0,0,0.12)",
+            margin: "0.5rem 0",
+            paddingTop: "1.25rem",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "10px",
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: "#F97316",
+              marginBottom: "0.35rem",
+            }}
+          >
+            Setup &amp; suivi
+          </div>
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontStyle: "italic",
+              fontSize: "0.95rem",
+              color: "#8C8680",
+              marginBottom: "1rem",
+            }}
+          >
+            Checklist technique + contexte que Victor voit depuis son dashboard.
+          </p>
+        </div>
+
+        <div>
+          <label style={labelStyle}>Checklist</label>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.55rem" }}>
+            <Checkbox
+              checked={state.github_ready}
+              onChange={(v) => onBool("github_ready", v)}
+              label="Compte GitHub créé"
+            />
+            <Checkbox
+              checked={state.vercel_ready}
+              onChange={(v) => onBool("vercel_ready", v)}
+              label="Compte Vercel créé"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label style={labelStyle}>Outils IA utilisés</label>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem 1.25rem" }}>
+            {LLM_OPTIONS.map((opt) => (
+              <Checkbox
+                key={opt.key}
+                checked={llmSet.has(opt.key)}
+                onChange={() => onLlmToggle(opt.key)}
+                label={opt.label}
+              />
+            ))}
+          </div>
+          {llmSet.has("other") && (
+            <input
+              value={state.llm_other_name}
+              onChange={(e) => onText("llm_other_name", e.target.value)}
+              placeholder="Précise lequel (Cursor, Gemini, v0…)"
+              style={{ ...inputStyle, marginTop: "0.6rem" }}
+            />
+          )}
+        </div>
+
+        <div>
+          <label style={labelStyle}>Commentaire / contexte pour Victor</label>
+          <textarea
+            value={state.notes}
+            onChange={(e) => onText("notes", e.target.value)}
+            placeholder="Ce que tu veux partager : difficultés, choix, avancée, besoins…"
+            rows={4}
+            style={{ ...inputStyle, resize: "vertical", minHeight: "100px" }}
+          />
+        </div>
 
         {error && (
           <p
@@ -216,6 +334,43 @@ export function ProjectEditor({ group }: { group: GroupWithMembers }) {
         </button>
       </div>
     </section>
+  );
+}
+
+function Checkbox({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+}) {
+  return (
+    <label
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "0.55rem",
+        cursor: "pointer",
+        fontFamily: "var(--font-body)",
+        fontSize: "1rem",
+        color: "#1A1714",
+      }}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        style={{
+          width: "18px",
+          height: "18px",
+          accentColor: "#F97316",
+          cursor: "pointer",
+        }}
+      />
+      {label}
+    </label>
   );
 }
 

@@ -174,6 +174,35 @@ export default async function AdminPage() {
                   <em style={{ color: "#8C8680" }}>—</em>
                 )}
               </AdminRow>
+              <AdminRow label="Checklist">
+                <span style={{ display: "inline-flex", gap: "1rem", flexWrap: "wrap" }}>
+                  <CheckTag ok={Boolean(g.github_ready)} label="GitHub" />
+                  <CheckTag ok={Boolean(g.vercel_ready)} label="Vercel" />
+                </span>
+              </AdminRow>
+              <AdminRow label="Outils IA">
+                {(() => {
+                  const used = g.llm_used
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                  if (used.length === 0)
+                    return <em style={{ color: "#8C8680" }}>—</em>;
+                  const pretty = used.map((k) => {
+                    if (k === "claude-code") return "Claude Code";
+                    if (k === "codex") return "Codex (OpenAI)";
+                    if (k === "other")
+                      return g.llm_other_name
+                        ? `Autre · ${g.llm_other_name}`
+                        : "Autre";
+                    return k;
+                  });
+                  return pretty.join(" · ");
+                })()}
+              </AdminRow>
+              <AdminRow label="Commentaire">
+                {g.notes || <em style={{ color: "#8C8680" }}>—</em>}
+              </AdminRow>
               {g.updated_at && (
                 <AdminRow label="MAJ">
                   <span
@@ -194,6 +223,41 @@ export default async function AdminPage() {
         ))}
       </div>
     </article>
+  );
+}
+
+function CheckTag({ ok, label }: { ok: boolean; label: string }) {
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "0.35rem",
+        fontFamily: "var(--font-mono)",
+        fontSize: "10px",
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        color: ok ? "#F97316" : "#8C8680",
+      }}
+    >
+      <span
+        style={{
+          display: "inline-block",
+          width: "14px",
+          height: "14px",
+          borderRadius: "3px",
+          border: `1px solid ${ok ? "#F97316" : "rgba(0,0,0,0.2)"}`,
+          background: ok ? "#F97316" : "transparent",
+          color: "#FFFFFF",
+          textAlign: "center",
+          lineHeight: "12px",
+          fontSize: "11px",
+        }}
+      >
+        {ok ? "✓" : ""}
+      </span>
+      {label}
+    </span>
   );
 }
 
