@@ -8,6 +8,7 @@ const links = [
   { href: "/theorie", label: "Théorie J1" },
   { href: "/brief", label: "Brief projet" },
   { href: "/ressources", label: "Ressources" },
+  { href: "/groupes", label: "Groupes" },
 ];
 
 export function Nav() {
