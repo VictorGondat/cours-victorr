@@ -37,7 +37,7 @@ export async function PATCH(
 
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
 
-  const allowed = [
+  const textFields = [
     "team_name",
     "project_name",
     "description",
@@ -45,13 +45,21 @@ export async function PATCH(
     "repo_url",
     "target_user",
     "problem",
+    "llm_used",
+    "llm_other_name",
+    "notes",
   ] as const;
 
-  const fields: Record<string, string> = {};
-  for (const k of allowed) {
-    if (typeof body[k] === "string") fields[k] = (body[k] as string).slice(0, 4000);
+  const boolFields = ["vercel_ready", "github_ready"] as const;
+
+  const update: Record<string, string | number> = {};
+  for (const k of textFields) {
+    if (typeof body[k] === "string") update[k] = (body[k] as string).slice(0, 4000);
+  }
+  for (const k of boolFields) {
+    if (typeof body[k] === "boolean") update[k] = body[k] ? 1 : 0;
   }
 
-  updateGroupProject(groupId, fields);
+  updateGroupProject(groupId, update);
   return NextResponse.json({ ok: true });
 }
