@@ -16,8 +16,8 @@ const jours = [
     duree: "7h",
     titre: "Build",
     desc: "Setup complet, wireframes, design system, développement guidé avec Claude Code, premier déploiement sur Vercel.",
-    href: "/brief#j2",
-    linkLabel: "Détails du planning",
+    href: "/j2",
+    linkLabel: "Ouvrir le guide",
   },
   {
     num: "J3",
