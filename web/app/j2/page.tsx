@@ -119,6 +119,11 @@ export default function J2Page() {
             </a>
           </li>
           <li>
+            <a href="#vercel" style={{ color: "inherit" }}>
+              Étape 6 — Mettre l'app en ligne (Vercel)
+            </a>
+          </li>
+          <li>
             <a href="#pieges" style={{ color: "inherit" }}>
               Les 7 pièges à éviter
             </a>
@@ -692,9 +697,102 @@ Ne touche aucun autre fichier. Quand c'est fait, arrête-toi pour que je relise 
           </div>
         </section>
 
-        {/* ── 8. PIEGES ── */}
+        {/* ── 8. VERCEL ── */}
+        <section id="vercel">
+          <h2>08 — Étape 6 : mettre l'app en ligne</h2>
+          <h3>Avec Vercel, en 3 minutes</h3>
+          <p>
+            Une app qui tourne sur votre ordi, c'est bien. Une app accessible
+            par un lien que vous envoyez à n'importe qui, c'est mieux. Vercel
+            fait exactement ça : à chaque fois que vous mergez sur{" "}
+            <code>main</code>, votre app est mise à jour automatiquement sur
+            une URL publique.
+          </p>
+
+          <h4>La connexion la plus simple</h4>
+          <p>
+            Une seule personne du groupe le fait, c'est suffisant. Les autres
+            seront ajoutés au projet ensuite.
+          </p>
+          <ol>
+            <li>
+              Aller sur <a href="https://vercel.com">vercel.com</a> et cliquer{" "}
+              <strong>Sign Up</strong>. Choisir{" "}
+              <strong>Continue with GitHub</strong>. C'est tout pour le compte.
+            </li>
+            <li>
+              Sur le dashboard Vercel, cliquer{" "}
+              <strong>Add New… → Project</strong>.
+            </li>
+            <li>
+              Vercel affiche la liste de vos repos GitHub. Cliquer{" "}
+              <strong>Import</strong> à côté de <code>campus-helper-gX</code>.
+            </li>
+            <li>
+              Vercel détecte tout seul que c'est un projet Next.js et
+              pré-remplit les options. Ne touchez à rien. Cliquer{" "}
+              <strong>Deploy</strong>.
+            </li>
+            <li>
+              30 secondes plus tard, votre app est en ligne. Vercel donne une
+              URL du genre{" "}
+              <code>campus-helper-g1.vercel.app</code>. C'est l'URL que
+              vous mettrez sur la <Link href="/groupes">page groupes</Link>.
+            </li>
+          </ol>
+
+          <h4>Ajouter les autres membres du groupe</h4>
+          <p>
+            Sur le projet Vercel :{" "}
+            <strong>Settings → Members → Invite</strong>, ajouter les pseudos
+            ou emails GitHub des binômes. Ils auront accès aux logs et aux
+            déploiements.
+          </p>
+
+          <h4>Et après ?</h4>
+          <p>
+            Plus rien à faire. Vercel surveille votre repo GitHub. À chaque PR
+            mergée sur <code>main</code>, il rebuild et redéploie tout seul.
+            Vous codez, vous mergez, l'URL publique se met à jour. C'est
+            l'effet magique du jour.
+          </p>
+
+          <div className="callout">
+            <span className="callout-label">Bonus : les preview URLs</span>
+            <p>
+              Vercel déploie aussi automatiquement <strong>chaque pull
+              request</strong> sur une URL temporaire dédiée. Ça permet de
+              tester une feature avant le merge sans toucher la prod. Vous
+              verrez le lien dans les commentaires GitHub de la PR.
+            </p>
+          </div>
+
+          <h4>Si le déploiement échoue</h4>
+          <p>
+            Vercel envoie un email avec le log d'erreur. Le réflexe :
+            copier-coller le message dans Claude Code et lui dire :{" "}
+            <em>« le déploiement Vercel échoue avec cette erreur, corrige et
+            ouvre une PR »</em>. Dans 9 cas sur 10, c'est une variable
+            d'environnement manquante, un import cassé, ou une dépendance
+            oubliée. Claude diagnostique vite.
+          </p>
+
+          <PromptBlock
+            label="Prompt — Demander à Claude de préparer le déploiement"
+            text={`On va déployer sur Vercel pour la première fois. Avant que je connecte le repo, vérifie que tout est prêt :
+
+- le projet build sans erreur en local
+- pas de variable d'environnement utilisée sans valeur par défaut ou sans avertissement
+- pas de chemin en dur qui ne marcherait qu'en local
+- le README mentionne comment lancer le projet
+
+Si tu vois quelque chose à corriger, propose-moi un plan avant de toucher au code.`}
+          />
+        </section>
+
+        {/* ── 9. PIEGES ── */}
         <section id="pieges">
-          <h2>08 — Les 7 pièges à éviter</h2>
+          <h2>09 — Les 7 pièges à éviter</h2>
           <h3>À garder en tête toute la journée</h3>
 
           <div className="grid sm:grid-cols-2 gap-4 my-6">
