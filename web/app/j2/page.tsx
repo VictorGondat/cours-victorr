@@ -312,7 +312,7 @@ export default function J2Page() {
             <p>
               Un groupe partage un seul compte Pro. Quelqu'un grille la limite
               à 11h en lançant 8 brouillons Claude Design. Plus personne ne
-              peut bosser jusqu'à 16h. Ça arrive tous les ans.
+              peut bosser jusqu'à 16h. C'est le scénario à éviter.
             </p>
           </div>
 
@@ -695,7 +695,7 @@ Ne touche aucun autre fichier. Quand c'est fait, arrête-toi pour que je relise 
         {/* ── 8. PIEGES ── */}
         <section id="pieges">
           <h2>08 — Les 7 pièges à éviter</h2>
-          <h3>Tirés des cours précédents, vraiment</h3>
+          <h3>À garder en tête toute la journée</h3>
 
           <div className="grid sm:grid-cols-2 gap-4 my-6">
             <PiegeCard
